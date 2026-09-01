@@ -9,7 +9,10 @@ const nav = [
 
 <header class="site-header">
   <div class="shell site-header__inner">
-    <a class="site-header__brand" href="#obsah">{BRAND.name}</a>
+    <a class="site-header__brand" href="#obsah" aria-label={BRAND.name}>
+      <span class="site-header__word">Midnight</span>
+      <span class="site-header__sub">Project</span>
+    </a>
     <nav aria-label="Obsah stránky">
       <ul class="site-header__nav">
         {
@@ -41,11 +44,33 @@ const nav = [
     padding-block: 1rem;
   }
 
+  /* Logotyp podle loga: plné MIDNIGHT + prostrkané PROJECT. */
   .site-header__brand {
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
     font-size: 1.125rem;
     text-decoration: none;
+  }
+
+  .site-header__word {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .site-header__sub {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  @media (max-width: 26rem) {
+    .site-header__sub {
+      letter-spacing: 0.2em;
+    }
   }
 
   .site-header__nav {
