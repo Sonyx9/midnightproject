@@ -1,0 +1,93 @@
+---
+interface Props {
+  /** ID formuláře ze SimpleShopu. */
+  formId: string;
+  /** Nadpis nad formulářem. */
+  title: string;
+  /** ID kotvy, na kterou míří tlačítko Koupit. */
+  anchor: string;
+}
+
+const { formId, title, anchor } = Astro.props;
+---
+
+<section class="order" id={anchor} aria-labelledby={`${anchor}-heading`}>
+  <h3 id={`${anchor}-heading`} class="order__title">{title}</h3>
+
+  <!--
+    SimpleShop si formulář dosadí sám asynchronně. Slot má proto rezervovanou
+    výšku, ať se stránka pod ním nepohne (CLS).
+  -->
+  <div class="order__slot">
+    <div data-SimpleShopForm={formId}>
+      <noscript>
+        <p>
+          Pro objednávku je potřeba zapnutý JavaScript. Napiš nám a pošleme ti
+          odkaz na objednávku ručně.
+        </p>
+      </noscript>
+    </div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ formId }}>
+  // Službu stačí natáhnout jednou, formulářů může být na stránce víc.
+  (function (i, s, o, g, r, a, m) {
+    i[r] =
+      i[r] ||
+      function () {
+        (i[r].q = i[r].q || []).push(arguments);
+      };
+    i[r].l = 1 * new Date();
+    if (!i.__simpleShopLoaded) {
+      i.__simpleShopLoaded = true;
+      a = s.createElement(o);
+      m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m);
+    }
+  })(
+    window,
+    document,
+    'script',
+    'https://form.simpleshop.cz/prj/js/SimpleShopService.js',
+    'sss'
+  );
+  sss('createForm', formId);
+</script>
+
+<style>
+  .order {
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border: var(--rule-w) solid var(--rule);
+    scroll-margin-block-start: 1.5rem;
+  }
+
+  .order__title {
+    margin-block-end: 1.5rem;
+  }
+
+  /* Rezervovaná výška — formulář dorazí až ze SimpleShopu. */
+  .order__slot {
+    min-block-size: 28rem;
+  }
+
+  /* SimpleShop si nese vlastní styly; srovnáváme jen to, co prosakuje. */
+  .order__slot :global(a) {
+    color: var(--accent);
+  }
+
+  .order__slot :global(input),
+  .order__slot :global(select),
+  .order__slot :global(textarea) {
+    border-radius: 0;
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 40rem) {
+    .order__slot {
+      min-block-size: 34rem;
+    }
+  }
+</style>

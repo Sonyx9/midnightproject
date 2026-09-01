@@ -1,0 +1,84 @@
+---
+import { BRAND, LEGAL, LINKS } from '../consts';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell">
+    <div class="site-footer__top">
+      <p class="site-footer__claim">
+        <strong>{BRAND.name}</strong> — ebooky a výzvy.
+        Nákup a zbytek obsahu běží na
+        <a href={LINKS.shop}>budujsamsebe.cz</a>.
+      </p>
+      <ul class="site-footer__links">
+        <li>
+          <a href={BRAND.instagram} rel="me noopener">
+            Instagram {BRAND.instagramHandle}
+          </a>
+        </li>
+        <li><a href={LINKS.privacy}>Zásady ochrany osobních údajů</a></li>
+        <li><a href={LINKS.terms}>Obchodní podmínky</a></li>
+      </ul>
+    </div>
+
+    <hr class="rule" />
+
+    <!-- Povinné identifikační údaje provozovatele -->
+    <div class="site-footer__legal">
+      <p>
+        Provozovatel: <strong>{LEGAL.company}</strong>, IČO: {LEGAL.ico}
+        <span aria-hidden="true"> · </span>
+        Kontakt: <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a>
+      </p>
+      <p>© {year} {BRAND.name}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: var(--rule-w) solid var(--rule);
+    margin-block-start: 2rem;
+    padding-block: 2.5rem 2rem;
+  }
+
+  .site-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1.5rem 2rem;
+    margin-block-end: 2rem;
+  }
+
+  .site-footer__claim {
+    max-width: 38ch;
+  }
+
+  .site-footer__links {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-block-start: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .site-footer__legal strong {
+    font-weight: 600;
+    color: var(--fg);
+  }
+</style>

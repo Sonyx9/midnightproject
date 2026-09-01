@@ -1,0 +1,247 @@
+/* ==========================================================================
+   Deník — základní design systém
+   Papír, ink, akcent. Ostré hrany, 3px linky, mono labely.
+   Žádné gradienty, žádné zaoblení, žádné stíny.
+   ========================================================================== */
+
+:root {
+  /* Paleta */
+  --paper: #f4f2ec;
+  --ink: #141412;
+  --accent: #d43518;
+
+  /* Sémantické tokeny — přebarvují se v .theme-midnight */
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --rule: var(--ink);
+  --muted: color-mix(in srgb, var(--ink) 62%, var(--paper));
+  --field-bg: var(--paper);
+
+  /* Typografie */
+  --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Rytmus */
+  --rule-w: 3px;
+  --gap: 1.5rem;
+  --measure: 68ch;
+  --shell: 72rem;
+}
+
+/* Midnight — invertovaná paleta. Scoped: platí jen uvnitř wrapperu. */
+.theme-midnight {
+  --bg: var(--ink);
+  --fg: var(--paper);
+  --rule: var(--paper);
+  --muted: color-mix(in srgb, var(--paper) 68%, var(--ink));
+  --field-bg: transparent;
+
+  background: var(--bg);
+  color: var(--fg);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  line-height: 1.6;
+  font-synthesis-weight: none;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 1.5rem + 3.6vw, 4.25rem);
+}
+
+h2 {
+  font-size: clamp(1.65rem, 1.3rem + 1.6vw, 2.5rem);
+}
+
+h3 {
+  font-size: clamp(1.15rem, 1.05rem + 0.5vw, 1.4rem);
+}
+
+p {
+  margin: 0;
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: var(--rule-w) solid var(--accent);
+  outline-offset: 3px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* --- Stavební prvky ------------------------------------------------------ */
+
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* Mono label — // TAKHLE */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.rule {
+  border: 0;
+  border-top: var(--rule-w) solid var(--rule);
+  margin: 0;
+}
+
+/* Tlačítko — plný akcent, ostré hrany */
+.btn {
+  display: inline-block;
+  padding: 0.9rem 1.5rem;
+  background: var(--accent);
+  color: var(--paper);
+  border: var(--rule-w) solid var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Sekundární tlačítko — jen obrys, ať v heru vede jedno CTA */
+.btn--ghost {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--rule);
+}
+
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  background: var(--accent);
+  color: var(--paper);
+  border-color: var(--accent);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--bg);
+  color: var(--fg);
+  border-color: var(--rule);
+}
+
+/* Checkbox — kreslený, ne nativní */
+.check {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.35rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.check::before {
+  content: '';
+  display: block;
+  inline-size: 1.35rem;
+  block-size: 1.35rem;
+  margin-block-start: 0.1em;
+  border: var(--rule-w) solid var(--rule);
+}
+
+/* Zaškrtnutý stav: příznak přes atribut, ať je to čitelné v markupu */
+.check[data-checked='true']::before {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Fajfka uvnitř rámečku — dva okraje otočené o 45°, žádný obrázek navíc */
+.check[data-checked='true']::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 0.48rem;
+  inset-inline-start: 0.33rem;
+  inline-size: 0.7rem;
+  block-size: 0.34rem;
+  border-inline-start: 3px solid var(--paper);
+  border-block-end: 3px solid var(--paper);
+  transform: rotate(-45deg);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10;
+  padding: 0.75rem 1rem;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--font-mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

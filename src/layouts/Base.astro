@@ -1,0 +1,98 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { BRAND, LEGAL, SHOP_SITE } from '../consts';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Kanonická cesta. Default = aktuální URL. */
+  path?: string;
+  /** Midnight je brand — proto výchozí. 'paper' zůstává pro případné další stránky. */
+  theme?: 'midnight' | 'paper';
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  theme = 'midnight',
+  ogImage = BRAND.ogImage,
+} = Astro.props;
+
+const canonical = new URL(path ?? Astro.url.pathname, BRAND.url).href;
+const ogImageUrl = new URL(ogImage, BRAND.url).href;
+
+const organization = {
+  '@type': 'Organization',
+  '@id': `${BRAND.url}/#organization`,
+  name: BRAND.name,
+  legalName: LEGAL.company,
+  url: BRAND.url,
+  email: LEGAL.email,
+  sameAs: [BRAND.instagram, SHOP_SITE],
+  identifier: {
+    '@type': 'PropertyValue',
+    name: 'IČO',
+    value: LEGAL.ico,
+  },
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${BRAND.url}/#website`,
+  name: BRAND.name,
+  url: BRAND.url,
+  inLanguage: BRAND.lang,
+  publisher: { '@id': `${BRAND.url}/#organization` },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [organization, website],
+};
+---
+
+<!doctype html>
+<html lang={BRAND.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content={theme === 'midnight' ? '#141412' : '#f4f2ec'} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={BRAND.name} />
+    <meta property="og:locale" content={BRAND.locale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+    <slot name="head" />
+  </head>
+  <body class:list={[theme === 'midnight' && 'theme-midnight']}>
+    <a class="skip-link" href="#obsah">Přeskočit na obsah</a>
+    <Header />
+    <main id="obsah">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

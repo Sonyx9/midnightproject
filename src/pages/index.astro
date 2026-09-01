@@ -1,0 +1,352 @@
+---
+import Base from '../layouts/Base.astro';
+import TrackerOptin from '../components/TrackerOptin.astro';
+import SimpleShopForm from '../components/SimpleShopForm.astro';
+import { products, formatPrice, orderAnchor } from '../data/products';
+import { BRAND, LINKS, CHECKOUT_NOTE } from '../consts';
+
+const title = 'Midnight Project — kup ebook, pojď do výzvy';
+const description =
+  'Dva ebooky k výzvám: dopaminový detox a 75 Hard po česku. Plány a trackery, žádné motivační kecy. Kup na budujsamsebe.cz a jdi do výzvy s námi.';
+
+/** Tlačítko Koupit vede na objednávkový formulář níž na stránce. */
+const buyables = products.map((product) => ({
+  ...product,
+  buyHref: `#${orderAnchor(product.slug)}`,
+  priceLabel: product.priceCzk !== null ? formatPrice(product.priceCzk) : null,
+}));
+
+/** Offer emitujeme jen u produktu, který má vyplněnou cenu. */
+const offers = buyables
+  .filter((p) => p.priceCzk !== null)
+  .map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Product',
+      name: p.title,
+      description: p.tagline,
+      brand: { '@type': 'Brand', name: BRAND.name },
+      offers: {
+        '@type': 'Offer',
+        price: p.priceCzk,
+        priceCurrency: 'CZK',
+        availability: 'https://schema.org/InStock',
+        url: `${BRAND.url}/#${orderAnchor(p.slug)}`,
+      },
+    },
+  }));
+
+const productsJsonLd =
+  offers.length > 0
+    ? { '@context': 'https://schema.org', '@type': 'ItemList', itemListElement: offers }
+    : null;
+
+const manifesto = [
+  'Žádné motivační kecy — plány a trackery',
+  'Ebook vydáme, až výzva prokáže, že funguje',
+  'Garance vrácení peněz u všeho, co prodáme',
+];
+---
+
+<Base title={title} description={description} path="/">
+  {
+    productsJsonLd && (
+      <script
+        slot="head"
+        type="application/ld+json"
+        set:html={JSON.stringify(productsJsonLd)}
+        is:inline
+      />
+    )
+  }
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="shell">
+      <p class="label">// MIDNIGHT PROJECT</p>
+      <h1>Kup si ebook.<br />A pojď do výzvy s námi.</h1>
+      <p class="hero__lead">
+        Dva plány, které si projdeš den po dni. Ebook koupíš na budujsamsebe.cz,
+        výzvu jedeme společně na Instagramu.
+      </p>
+      <p class="hero__cta">
+        <a class="btn" href="#produkty">Chci ebook →</a>
+        <a class="btn btn--ghost" href={BRAND.instagram} rel="me noopener">
+          Pojď do výzvy
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <!-- Produkty -->
+  <section class="products shell" aria-labelledby="produkty">
+    <div class="section-head">
+      <p class="label">// CO PRODÁVÁME</p>
+      <h2 id="produkty">Zatím dva. Oba hotové.</h2>
+      <p class="section-head__note">
+        Víc jich nemáme schválně — ebook vydáme, až výzva prokáže, že funguje.
+      </p>
+    </div>
+
+    <ul class="cards">
+      {
+        buyables.map((product) => (
+          <li class="card">
+            {product.badge && <span class="card__badge">{product.badge}</span>}
+            <h3 class="card__title">{product.title}</h3>
+            <p class="card__tagline">{product.tagline}</p>
+
+            <ul class="card__includes">
+              {product.includes.map((item) => (
+                <li class="check" data-checked="true">
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div class="card__buy">
+              {product.priceLabel && (
+                <p class="card__price">{product.priceLabel}</p>
+              )}
+              <a class="btn" href={product.buyHref}>Koupit →</a>
+              <p class="card__where">{CHECKOUT_NOTE}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="products__guarantee">
+      Nesedne ti to? Napiš nám a peníze vrátíme. U všeho, co prodáme.
+    </p>
+  </section>
+
+  <!-- Objednávka -->
+  <section class="orders shell" aria-labelledby="objednavka">
+    <div class="section-head">
+      <p class="label">// OBJEDNÁVKA</p>
+      <h2 id="objednavka">Vyplň a máš to</h2>
+      <p class="section-head__note">
+        Objednávka i platba běží přes SimpleShop. Ebook ti přijde na e-mail.
+      </p>
+    </div>
+
+    <div class="orders__list">
+      {
+        buyables.map((product) => (
+          <SimpleShopForm
+            formId={product.simpleShopFormId}
+            title={product.title}
+            anchor={orderAnchor(product.slug)}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <!-- Výzva / komunita -->
+  <section class="crew shell" aria-labelledby="vyzva">
+    <p class="label">// NEJEDEŠ V TOM SÁM</p>
+    <h2 id="vyzva">Výzvu jedeme společně</h2>
+    <p class="crew__text">
+      Ebook je plán. Zbytek je, že u toho někdo je. Denní progres, kontrola
+      a lidi, co jedou stejnou výzvu — to všechno běží na Instagramu
+      {BRAND.instagramHandle}.
+    </p>
+    <p class="crew__cta">
+      <a class="btn" href={BRAND.instagram} rel="me noopener">
+        Sleduj {BRAND.name} →
+      </a>
+    </p>
+  </section>
+
+  <!-- Email capture -->
+  <section class="capture shell">
+    <TrackerOptin
+      id="tracker"
+      source="midnight-onepage"
+      heading="Ještě nekupuješ? Vezmi si tracker."
+      text="Nech email — pošleme ti 75 Hard tracker PDF zdarma a dáme vědět, až přidáme další výzvu."
+    />
+  </section>
+
+  <!-- Mini-manifest -->
+  <section class="manifesto shell" aria-labelledby="manifest">
+    <p class="label">// JAK TO DĚLÁME</p>
+    <h2 id="manifest" class="visually-hidden">Náš mini-manifest</h2>
+    <ul class="manifesto__list">
+      {
+        manifesto.map((line) => (
+          <li class="check" data-checked="true">
+            <span>{line}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 2rem + 6vw, 6.5rem);
+  }
+
+  .hero h1 {
+    margin-block: 1.25rem 1.5rem;
+  }
+
+  .hero__lead {
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+    color: var(--muted);
+    max-width: 46ch;
+  }
+
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-start: 2.5rem;
+  }
+
+  .section-head {
+    margin-block-end: 2.5rem;
+  }
+
+  .section-head h2 {
+    margin-block-start: 0.75rem;
+  }
+
+  .section-head__note {
+    margin-block-start: 0.85rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .products {
+    padding-block: clamp(3rem, 2rem + 4vw, 5rem);
+    scroll-margin-block-start: 1.5rem;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: var(--rule-w);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem 1.75rem;
+    border: var(--rule-w) solid var(--rule);
+  }
+
+  .card__badge {
+    align-self: start;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+  }
+
+  .card__tagline {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .card__includes {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .card__includes .check {
+    font-size: 0.875rem;
+  }
+
+  .card__buy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-block-start: auto;
+    padding-block-start: 1.5rem;
+    border-top: 2px solid color-mix(in srgb, var(--rule) 30%, transparent);
+  }
+
+  .card__price {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .card__where {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .products__guarantee {
+    margin-block-start: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .orders {
+    padding-block: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  .orders__list {
+    display: grid;
+    gap: var(--rule-w);
+  }
+
+  .crew {
+    padding-block: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  .crew h2 {
+    margin-block-start: 0.75rem;
+  }
+
+  .crew__text {
+    margin-block-start: 1.25rem;
+    color: var(--muted);
+  }
+
+  .crew__cta {
+    margin-block-start: 2rem;
+  }
+
+  .capture {
+    padding-block-end: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  .manifesto {
+    padding-block-end: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+
+  .manifesto__list {
+    display: grid;
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

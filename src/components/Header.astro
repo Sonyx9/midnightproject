@@ -1,0 +1,78 @@
+---
+import { BRAND } from '../consts';
+
+const nav = [
+  { label: 'Ebooky', href: '#produkty' },
+  { label: 'Výzva', href: '#vyzva' },
+];
+---
+
+<header class="site-header">
+  <div class="shell site-header__inner">
+    <a class="site-header__brand" href="#obsah">
+      {BRAND.name}
+    </a>
+    <nav aria-label="Obsah stránky">
+      <ul class="site-header__nav">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+        <li>
+          <a class="site-header__out" href={BRAND.instagram} rel="me noopener">
+            Instagram →
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: var(--rule-w) solid var(--rule);
+  }
+
+  .site-header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-block: 1rem;
+  }
+
+  .site-header__brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: 1.125rem;
+    text-decoration: none;
+  }
+
+  .site-header__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .site-header__nav a {
+    text-decoration: none;
+  }
+
+  .site-header__out {
+    color: var(--accent);
+  }
+</style>
