@@ -1,0 +1,113 @@
+---
+interface Props {
+  /** ID formuláře ze SimpleShopu. */
+  formId: string;
+  /** Název výzvy — do nadpisu okna. */
+  title: string;
+  /** Popisek tlačítka, které okno otevírá. */
+  label?: string;
+}
+
+const { formId, title, label = 'Beru výzvu →' } = Astro.props;
+const dialogId = `objednavka-${formId}`;
+---
+
+<button class="btn order-open" type="button" data-order-open={dialogId}>
+  {label}
+</button>
+
+<dialog class="order-dialog band-paper" id={dialogId} data-form-id={formId} aria-labelledby={`${dialogId}-title`}>
+  <div class="order-dialog__inner">
+    <div class="order-dialog__head">
+      <h3 id={`${dialogId}-title`} class="order-dialog__title">{title}</h3>
+      <button class="order-dialog__close" type="button" data-order-close aria-label="Zavřít">
+        ✕
+      </button>
+    </div>
+
+    <!--
+      Markup uvnitř musí zůstat přesně takhle. SimpleShop v createForm() sahá na
+      `[data-SimpleShopForm='…'] > div` — bez přímého potomka <div> spadne na
+      null a formulář se nevykreslí. Z prvního <a> si navíc počítá hash kampaně,
+      takže odkaz ani jeho text neměnit.
+    -->
+    <div class="order-dialog__slot">
+      <div data-SimpleShopForm={formId}>
+        <div>
+          Prodejní formulář je vytvořen v systému <a
+            href="https://www.simpleshop.cz/?utm_source=simpleshop&utm_medium=form&utm_campaign=103788"
+            target="_blank"
+            rel="noopener">SimpleShop.cz</a
+          >.
+        </div>
+      </div>
+    </div>
+
+    <noscript>
+      <p>
+        Pro objednávku je potřeba zapnutý JavaScript. Napiš nám na
+        <a href="mailto:fik.maxmilian@gmail.com">fik.maxmilian@gmail.com</a>
+        a pošleme ti odkaz na objednávku ručně.
+      </p>
+    </noscript>
+  </div>
+</dialog>
+
+<style>
+  .order-open {
+    align-self: start;
+  }
+
+  .order-dialog {
+    padding: 0;
+    border: var(--rule-w) solid var(--fg);
+    background: var(--bg);
+    color: var(--fg);
+    inline-size: min(34rem, 92vw);
+    max-block-size: 90vh;
+  }
+
+  .order-dialog::backdrop {
+    background: rgb(6 26 36 / 0.78);
+  }
+
+  .order-dialog__inner {
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+  }
+
+  .order-dialog__head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block-end: 1.5rem;
+  }
+
+  .order-dialog__title {
+    font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+  }
+
+  .order-dialog__close {
+    flex: 0 0 auto;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    border: 2px solid var(--rule);
+    font-size: 0.875rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .order-dialog__close:hover {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+
+  /* Rezervovaná výška, než dorazí iframe ze SimpleShopu. */
+  .order-dialog__slot {
+    min-block-size: 24rem;
+  }
+</style>
