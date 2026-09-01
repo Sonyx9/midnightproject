@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import TrackerOptin from '../components/TrackerOptin.astro';
 import SimpleShopForm from '../components/SimpleShopForm.astro';
 import { products, formatPrice, orderAnchor } from '../data/products';
-import { BRAND, LINKS, CHECKOUT_NOTE } from '../consts';
+import { BRAND, CHECKOUT_NOTE } from '../consts';
 
 const title = 'Midnight Project — kup ebook, pojď do výzvy';
 const description =
@@ -123,7 +123,8 @@ const manifesto = [
   </section>
 
   <!-- Objednávka -->
-  <section class="orders shell" aria-labelledby="objednavka">
+  <section class="orders band-paper" aria-labelledby="objednavka">
+    <div class="shell">
     <div class="section-head">
       <p class="label">// OBJEDNÁVKA</p>
       <h2 id="objednavka">Vyplň a máš to</h2>
@@ -143,10 +144,11 @@ const manifesto = [
         ))
       }
     </div>
+    </div>
   </section>
 
   <!-- Odměna -->
-  <section class="reward band-midnight" id="odmena" aria-labelledby="odmena-heading">
+  <section class="reward" id="odmena" aria-labelledby="odmena-heading">
     <div class="shell">
       <p class="label">// ODMĚNA</p>
       <h2 id="odmena-heading">Splň výzvu. A jdi na párty.</h2>

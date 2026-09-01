@@ -28,15 +28,15 @@
     var(--orange) 100%
   );
 
-  /* Sémantické tokeny — výchozí je světlá stránka. */
-  --bg: var(--paper);
-  --fg: var(--midnight-900);
-  --accent: var(--blue-ink);
-  --on-accent: var(--paper);
-  --rule: color-mix(in srgb, var(--midnight-900) 24%, transparent);
-  --rule-strong: color-mix(in srgb, var(--midnight-900) 55%, transparent);
-  --muted: color-mix(in srgb, var(--midnight-900) 66%, var(--paper));
-  --field-bg: transparent;
+  /* Sémantické tokeny — výchozí je půlnoční plocha. */
+  --bg: var(--midnight-900);
+  --fg: var(--paper);
+  --accent: var(--cyan);
+  --on-accent: var(--midnight-900);
+  --rule: color-mix(in srgb, var(--paper) 26%, transparent);
+  --rule-strong: color-mix(in srgb, var(--paper) 55%, transparent);
+  --muted: color-mix(in srgb, var(--paper) 66%, var(--midnight-900));
+  --field-bg: color-mix(in srgb, var(--paper) 5%, transparent);
 
   /* Typografie */
   --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
@@ -49,9 +49,26 @@
 }
 
 /*
-   Půlnoční pruh — nasazuje se po sekcích, ne na celou stránku.
-   Uvnitř se překlopí tokeny, takže potomci se přebarví sami.
+   Pruhy — překlápějí tokeny po sekcích, takže se potomci přebarví sami.
+   .band-paper světlá plocha uvnitř tmavé stránky (nese objednávkové formuláře,
+   které si SimpleShop stylují pro světlý podklad).
+   .band-midnight je opak, pro případ tmavé sekce uvnitř světlého pruhu.
 */
+.band-paper {
+  --bg: var(--paper);
+  --fg: var(--midnight-900);
+  /* Azurová je na světlém nečitelná (1,7:1), proto tmavší modrá. */
+  --accent: var(--blue-ink);
+  --on-accent: var(--paper);
+  --rule: color-mix(in srgb, var(--midnight-900) 24%, transparent);
+  --rule-strong: color-mix(in srgb, var(--midnight-900) 55%, transparent);
+  --muted: color-mix(in srgb, var(--midnight-900) 66%, var(--paper));
+  --field-bg: transparent;
+
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
 .band-midnight {
   --bg: var(--midnight-900);
   --fg: var(--paper);
@@ -64,12 +81,6 @@
 
   background-color: var(--bg);
   color: var(--fg);
-  /* Nasvícení jako na logu. */
-  background-image: radial-gradient(
-    60rem 32rem at 50% 0%,
-    color-mix(in srgb, var(--midnight-700) 80%, transparent),
-    transparent 70%
-  );
 }
 
 *,
@@ -84,7 +95,20 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  /* Nasvícení plochy jako na logu — jemné, ať zůstane čitelnost. */
+  background-image:
+    radial-gradient(
+      70rem 40rem at 50% -10%,
+      color-mix(in srgb, var(--midnight-700) 85%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50rem 40rem at 100% 100%,
+      color-mix(in srgb, #0d3330 65%, transparent),
+      transparent 70%
+    );
+  background-attachment: fixed;
   color: var(--fg);
   font-family: var(--font-display);
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);

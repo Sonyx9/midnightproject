@@ -9,8 +9,6 @@ interface Props {
   description: string;
   /** Kanonická cesta. Default = aktuální URL. */
   path?: string;
-  /** Stránka je světlá; půlnoční se nasazuje po sekcích třídou .band-midnight. */
-  theme?: 'paper';
   ogImage?: string;
 }
 
@@ -18,7 +16,6 @@ const {
   title,
   description,
   path,
-  theme = 'paper',
   ogImage = BRAND.ogImage,
 } = Astro.props;
 
@@ -63,7 +60,7 @@ const jsonLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#f2f8fa" />
+    <meta name="theme-color" content="#061a24" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={BRAND.name} />
