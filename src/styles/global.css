@@ -1,21 +1,38 @@
 /* ==========================================================================
-   Deník — základní design systém
-   Papír, ink, akcent. Ostré hrany, 3px linky, mono labely.
-   Žádné gradienty, žádné zaoblení, žádné stíny.
+   Midnight Project — design systém
+   Půlnoční plocha, bílý text, značkový gradient azurová → modrá → oranžová.
+   Ostré hrany, 3px linky, mono labely. Gradient je vyhrazený pro akcenty,
+   plochy zůstávají ploché.
    ========================================================================== */
 
 :root {
-  /* Paleta */
-  --paper: #f4f2ec;
-  --ink: #141412;
-  --accent: #d43518;
+  /* Značkové barvy odečtené z loga */
+  --midnight-900: #061a24; /* nejtmavší plocha */
+  --midnight-800: #0a2431;
+  --midnight-700: #10394a; /* nasvícený střed */
+  --paper: #f2f8fa; /* bílá z logotypu */
 
-  /* Sémantické tokeny — přebarvují se v .theme-midnight */
-  --bg: var(--paper);
-  --fg: var(--ink);
-  --rule: var(--ink);
-  --muted: color-mix(in srgb, var(--ink) 62%, var(--paper));
-  --field-bg: var(--paper);
+  --cyan: #2fd2ef;
+  --blue: #3d6bf5;
+  --violet: #7b4be8;
+  --orange: #ff6a1a;
+
+  --accent: var(--cyan);
+  --brand-gradient: linear-gradient(
+    100deg,
+    var(--cyan) 0%,
+    var(--blue) 34%,
+    var(--violet) 62%,
+    var(--orange) 100%
+  );
+
+  /* Sémantické tokeny */
+  --bg: var(--midnight-900);
+  --fg: var(--paper);
+  --rule: color-mix(in srgb, var(--paper) 26%, transparent);
+  --rule-strong: color-mix(in srgb, var(--paper) 55%, transparent);
+  --muted: color-mix(in srgb, var(--paper) 66%, var(--midnight-900));
+  --field-bg: color-mix(in srgb, var(--paper) 5%, transparent);
 
   /* Typografie */
   --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
@@ -23,17 +40,17 @@
 
   /* Rytmus */
   --rule-w: 3px;
-  --gap: 1.5rem;
   --measure: 68ch;
   --shell: 72rem;
 }
 
-/* Midnight — invertovaná paleta. Scoped: platí jen uvnitř wrapperu. */
-.theme-midnight {
-  --bg: var(--ink);
-  --fg: var(--paper);
-  --rule: var(--paper);
-  --muted: color-mix(in srgb, var(--paper) 68%, var(--ink));
+/* Světlá varianta zůstává pro případné další stránky. */
+.theme-paper {
+  --bg: var(--paper);
+  --fg: var(--midnight-900);
+  --rule: color-mix(in srgb, var(--midnight-900) 26%, transparent);
+  --rule-strong: color-mix(in srgb, var(--midnight-900) 55%, transparent);
+  --muted: color-mix(in srgb, var(--midnight-900) 66%, var(--paper));
   --field-bg: transparent;
 
   background: var(--bg);
@@ -58,6 +75,22 @@ body {
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
   line-height: 1.6;
   font-synthesis-weight: none;
+}
+
+/* Nasvícení plochy jako na logu — jemné, ať zůstane čitelnost. */
+body.theme-midnight {
+  background-image:
+    radial-gradient(
+      70rem 40rem at 50% -10%,
+      color-mix(in srgb, var(--midnight-700) 85%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50rem 40rem at 100% 100%,
+      color-mix(in srgb, #0d3330 70%, transparent),
+      transparent 70%
+    );
+  background-attachment: fixed;
 }
 
 h1,
@@ -95,11 +128,11 @@ a {
 }
 
 a:hover {
-  color: var(--accent);
+  color: var(--cyan);
 }
 
 :focus-visible {
-  outline: var(--rule-w) solid var(--accent);
+  outline: var(--rule-w) solid var(--cyan);
   outline-offset: 3px;
 }
 
@@ -123,23 +156,26 @@ img {
   font-size: 0.8125rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--cyan);
   margin: 0;
 }
 
+/* Dělicí linka nese značkový gradient. */
 .rule {
   border: 0;
-  border-top: var(--rule-w) solid var(--rule);
+  block-size: var(--rule-w);
+  background: var(--brand-gradient);
+  opacity: 0.9;
   margin: 0;
 }
 
-/* Tlačítko — plný akcent, ostré hrany */
+/* Primární tlačítko — gradient z loga, text v půlnoční. */
 .btn {
   display: inline-block;
   padding: 0.9rem 1.5rem;
-  background: var(--accent);
-  color: var(--paper);
-  border: var(--rule-w) solid var(--accent);
+  background: var(--brand-gradient);
+  color: var(--midnight-900);
+  border: var(--rule-w) solid transparent;
   font-family: var(--font-mono);
   font-size: 0.9375rem;
   font-weight: 600;
@@ -149,25 +185,25 @@ img {
   cursor: pointer;
 }
 
-/* Sekundární tlačítko — jen obrys, ať v heru vede jedno CTA */
+.btn:hover,
+.btn:focus-visible {
+  color: var(--midnight-900);
+  filter: brightness(1.12);
+}
+
+/* Sekundární tlačítko — jen obrys, ať v heru vede jedno CTA. */
 .btn--ghost {
   background: transparent;
   color: var(--fg);
-  border-color: var(--rule);
+  border-color: var(--rule-strong);
 }
 
 .btn--ghost:hover,
 .btn--ghost:focus-visible {
-  background: var(--accent);
-  color: var(--paper);
-  border-color: var(--accent);
-}
-
-.btn:hover,
-.btn:focus-visible {
-  background: var(--bg);
-  color: var(--fg);
-  border-color: var(--rule);
+  color: var(--midnight-900);
+  background: var(--cyan);
+  border-color: var(--cyan);
+  filter: none;
 }
 
 /* Checkbox — kreslený, ne nativní */
@@ -188,13 +224,12 @@ img {
   inline-size: 1.35rem;
   block-size: 1.35rem;
   margin-block-start: 0.1em;
-  border: var(--rule-w) solid var(--rule);
+  border: var(--rule-w) solid var(--rule-strong);
 }
 
-/* Zaškrtnutý stav: příznak přes atribut, ať je to čitelné v markupu */
 .check[data-checked='true']::before {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--cyan);
+  border-color: var(--cyan);
 }
 
 /* Fajfka uvnitř rámečku — dva okraje otočené o 45°, žádný obrázek navíc */
@@ -205,9 +240,44 @@ img {
   inset-inline-start: 0.33rem;
   inline-size: 0.7rem;
   block-size: 0.34rem;
-  border-inline-start: 3px solid var(--paper);
-  border-block-end: 3px solid var(--paper);
+  border-inline-start: 3px solid var(--midnight-900);
+  border-block-end: 3px solid var(--midnight-900);
   transform: rotate(-45deg);
+}
+
+/* Závorky z loga — rámují hero. */
+.brackets {
+  position: relative;
+  padding: clamp(1.5rem, 1rem + 3vw, 3rem) 0;
+}
+
+.brackets::before,
+.brackets::after {
+  content: '';
+  position: absolute;
+  inline-size: clamp(2.5rem, 6vw, 5rem);
+  block-size: clamp(2.5rem, 6vw, 5rem);
+  background: var(--brand-gradient);
+  pointer-events: none;
+}
+
+.brackets::before {
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 3px, 3px 3px, 3px 100%, 0 100%);
+}
+
+.brackets::after {
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  clip-path: polygon(
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 calc(100% - 3px),
+    calc(100% - 3px) calc(100% - 3px),
+    calc(100% - 3px) 0
+  );
 }
 
 .visually-hidden {
@@ -232,8 +302,8 @@ img {
   top: 1rem;
   z-index: 10;
   padding: 0.75rem 1rem;
-  background: var(--accent);
-  color: var(--paper);
+  background: var(--cyan);
+  color: var(--midnight-900);
   font-family: var(--font-mono);
 }
 

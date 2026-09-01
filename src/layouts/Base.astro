@@ -63,7 +63,7 @@ const jsonLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content={theme === 'midnight' ? '#141412' : '#f4f2ec'} />
+    <meta name="theme-color" content={theme === 'midnight' ? '#061a24' : '#f2f8fa'} />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={BRAND.name} />
@@ -87,7 +87,7 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
     <slot name="head" />
   </head>
-  <body class:list={[theme === 'midnight' && 'theme-midnight']}>
+  <body class:list={[theme === 'midnight' ? 'theme-midnight' : 'theme-paper']}>
     <a class="skip-link" href="#obsah">Přeskočit na obsah</a>
     <Header />
     <main id="obsah">

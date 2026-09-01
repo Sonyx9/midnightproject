@@ -20,13 +20,16 @@ const { formId, title, anchor } = Astro.props;
   -->
   <div class="order__slot">
     <div data-SimpleShopForm={formId}>
-      <noscript>
-        <p>
-          Pro objednávku je potřeba zapnutý JavaScript. Napiš nám a pošleme ti
-          odkaz na objednávku ručně.
-        </p>
-      </noscript>
+      <!-- SimpleShop tenhle obsah přepíše, jakmile formulář vykreslí. -->
+      <p class="order__loading">Načítám objednávkový formulář…</p>
     </div>
+    <noscript>
+      <p class="order__noscript">
+        Pro objednávku je potřeba zapnutý JavaScript. Napiš nám na
+        <a href="mailto:fik.maxmilian@gmail.com">fik.maxmilian@gmail.com</a>
+        a pošleme ti odkaz na objednávku ručně.
+      </p>
+    </noscript>
   </div>
 </section>
 
@@ -68,21 +71,38 @@ const { formId, title, anchor } = Astro.props;
     margin-block-end: 1.5rem;
   }
 
-  /* Rezervovaná výška — formulář dorazí až ze SimpleShopu. */
+  /*
+    SimpleShop si nese vlastní styly počítající se světlým pozadím — na půlnoční
+    ploše by byl tmavý text neviditelný. Formulář proto dostane světlou desku.
+    Zároveň má rezervovanou výšku, protože dorazí až asynchronně.
+  */
   .order__slot {
     min-block-size: 28rem;
+    padding: clamp(1rem, 0.75rem + 1vw, 1.75rem);
+    background: var(--paper);
+    color: var(--midnight-900);
   }
 
-  /* SimpleShop si nese vlastní styly; srovnáváme jen to, co prosakuje. */
   .order__slot :global(a) {
-    color: var(--accent);
+    color: #0b6a8a;
   }
 
   .order__slot :global(input),
   .order__slot :global(select),
   .order__slot :global(textarea) {
     border-radius: 0;
+  }
+
+  .order__loading {
     font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--midnight-900) 60%, var(--paper));
+  }
+
+  .order__noscript {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--midnight-900);
   }
 
   @media (max-width: 40rem) {
