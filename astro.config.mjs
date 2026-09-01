@@ -1,7 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// https://astro.build/config
+// Web běží na vlastní doméně v kořeni — žádný `base`, jinak by se po nasazení
+// rozbily cesty ke stylům.
 export default defineConfig({
-  site: 'https://budujsamsebe.cz',
+  site: 'https://midnightproject.cz',
 });

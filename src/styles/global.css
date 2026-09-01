@@ -17,7 +17,9 @@
   --violet: #7b4be8;
   --orange: #ff6a1a;
 
-  --accent: var(--cyan);
+  /* Azurová je na světlém pozadí nečitelná (1,7:1), pro text proto tmavší modrá. */
+  --blue-ink: #2b4fd8;
+
   --brand-gradient: linear-gradient(
     100deg,
     var(--cyan) 0%,
@@ -26,13 +28,15 @@
     var(--orange) 100%
   );
 
-  /* Sémantické tokeny */
-  --bg: var(--midnight-900);
-  --fg: var(--paper);
-  --rule: color-mix(in srgb, var(--paper) 26%, transparent);
-  --rule-strong: color-mix(in srgb, var(--paper) 55%, transparent);
-  --muted: color-mix(in srgb, var(--paper) 66%, var(--midnight-900));
-  --field-bg: color-mix(in srgb, var(--paper) 5%, transparent);
+  /* Sémantické tokeny — výchozí je světlá stránka. */
+  --bg: var(--paper);
+  --fg: var(--midnight-900);
+  --accent: var(--blue-ink);
+  --on-accent: var(--paper);
+  --rule: color-mix(in srgb, var(--midnight-900) 24%, transparent);
+  --rule-strong: color-mix(in srgb, var(--midnight-900) 55%, transparent);
+  --muted: color-mix(in srgb, var(--midnight-900) 66%, var(--paper));
+  --field-bg: transparent;
 
   /* Typografie */
   --font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
@@ -44,17 +48,28 @@
   --shell: 72rem;
 }
 
-/* Světlá varianta zůstává pro případné další stránky. */
-.theme-paper {
-  --bg: var(--paper);
-  --fg: var(--midnight-900);
-  --rule: color-mix(in srgb, var(--midnight-900) 26%, transparent);
-  --rule-strong: color-mix(in srgb, var(--midnight-900) 55%, transparent);
-  --muted: color-mix(in srgb, var(--midnight-900) 66%, var(--paper));
-  --field-bg: transparent;
+/*
+   Půlnoční pruh — nasazuje se po sekcích, ne na celou stránku.
+   Uvnitř se překlopí tokeny, takže potomci se přebarví sami.
+*/
+.band-midnight {
+  --bg: var(--midnight-900);
+  --fg: var(--paper);
+  --accent: var(--cyan);
+  --on-accent: var(--midnight-900);
+  --rule: color-mix(in srgb, var(--paper) 26%, transparent);
+  --rule-strong: color-mix(in srgb, var(--paper) 55%, transparent);
+  --muted: color-mix(in srgb, var(--paper) 66%, var(--midnight-900));
+  --field-bg: color-mix(in srgb, var(--paper) 5%, transparent);
 
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--fg);
+  /* Nasvícení jako na logu. */
+  background-image: radial-gradient(
+    60rem 32rem at 50% 0%,
+    color-mix(in srgb, var(--midnight-700) 80%, transparent),
+    transparent 70%
+  );
 }
 
 *,
@@ -75,22 +90,6 @@ body {
   font-size: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
   line-height: 1.6;
   font-synthesis-weight: none;
-}
-
-/* Nasvícení plochy jako na logu — jemné, ať zůstane čitelnost. */
-body.theme-midnight {
-  background-image:
-    radial-gradient(
-      70rem 40rem at 50% -10%,
-      color-mix(in srgb, var(--midnight-700) 85%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      50rem 40rem at 100% 100%,
-      color-mix(in srgb, #0d3330 70%, transparent),
-      transparent 70%
-    );
-  background-attachment: fixed;
 }
 
 h1,
@@ -128,11 +127,11 @@ a {
 }
 
 a:hover {
-  color: var(--cyan);
+  color: var(--accent);
 }
 
 :focus-visible {
-  outline: var(--rule-w) solid var(--cyan);
+  outline: var(--rule-w) solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -156,7 +155,7 @@ img {
   font-size: 0.8125rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--cyan);
+  color: var(--accent);
   margin: 0;
 }
 
@@ -169,13 +168,17 @@ img {
   margin: 0;
 }
 
-/* Primární tlačítko — gradient z loga, text v půlnoční. */
+/*
+   Primární tlačítko — jedna barva, žádný gradient.
+   Bere se z tokenů, takže se v půlnočním pruhu obrátí samo:
+   na světlé stránce tmavé tlačítko, na tmavém pruhu světlé.
+*/
 .btn {
   display: inline-block;
   padding: 0.9rem 1.5rem;
-  background: var(--brand-gradient);
-  color: var(--midnight-900);
-  border: var(--rule-w) solid transparent;
+  background: var(--fg);
+  color: var(--bg);
+  border: var(--rule-w) solid var(--fg);
   font-family: var(--font-mono);
   font-size: 0.9375rem;
   font-weight: 600;
@@ -183,12 +186,14 @@ img {
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
 }
 
 .btn:hover,
 .btn:focus-visible {
-  color: var(--midnight-900);
-  filter: brightness(1.12);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
 }
 
 /* Sekundární tlačítko — jen obrys, ať v heru vede jedno CTA. */
@@ -200,10 +205,9 @@ img {
 
 .btn--ghost:hover,
 .btn--ghost:focus-visible {
-  color: var(--midnight-900);
-  background: var(--cyan);
-  border-color: var(--cyan);
-  filter: none;
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--bg);
 }
 
 /* Checkbox — kreslený, ne nativní */
@@ -228,8 +232,8 @@ img {
 }
 
 .check[data-checked='true']::before {
-  background: var(--cyan);
-  border-color: var(--cyan);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 /* Fajfka uvnitř rámečku — dva okraje otočené o 45°, žádný obrázek navíc */
@@ -240,44 +244,9 @@ img {
   inset-inline-start: 0.33rem;
   inline-size: 0.7rem;
   block-size: 0.34rem;
-  border-inline-start: 3px solid var(--midnight-900);
-  border-block-end: 3px solid var(--midnight-900);
+  border-inline-start: 3px solid var(--on-accent);
+  border-block-end: 3px solid var(--on-accent);
   transform: rotate(-45deg);
-}
-
-/* Závorky z loga — rámují hero. */
-.brackets {
-  position: relative;
-  padding: clamp(1.5rem, 1rem + 3vw, 3rem) 0;
-}
-
-.brackets::before,
-.brackets::after {
-  content: '';
-  position: absolute;
-  inline-size: clamp(2.5rem, 6vw, 5rem);
-  block-size: clamp(2.5rem, 6vw, 5rem);
-  background: var(--brand-gradient);
-  pointer-events: none;
-}
-
-.brackets::before {
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  clip-path: polygon(0 0, 100% 0, 100% 3px, 3px 3px, 3px 100%, 0 100%);
-}
-
-.brackets::after {
-  inset-block-end: 0;
-  inset-inline-end: 0;
-  clip-path: polygon(
-    100% 0,
-    100% 100%,
-    0 100%,
-    0 calc(100% - 3px),
-    calc(100% - 3px) calc(100% - 3px),
-    calc(100% - 3px) 0
-  );
 }
 
 .visually-hidden {
@@ -302,8 +271,8 @@ img {
   top: 1rem;
   z-index: 10;
   padding: 0.75rem 1rem;
-  background: var(--cyan);
-  color: var(--midnight-900);
+  background: var(--accent);
+  color: var(--on-accent);
   font-family: var(--font-mono);
 }
 

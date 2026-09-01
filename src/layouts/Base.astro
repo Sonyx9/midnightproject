@@ -9,8 +9,8 @@ interface Props {
   description: string;
   /** Kanonická cesta. Default = aktuální URL. */
   path?: string;
-  /** Midnight je brand — proto výchozí. 'paper' zůstává pro případné další stránky. */
-  theme?: 'midnight' | 'paper';
+  /** Stránka je světlá; půlnoční se nasazuje po sekcích třídou .band-midnight. */
+  theme?: 'paper';
   ogImage?: string;
 }
 
@@ -18,7 +18,7 @@ const {
   title,
   description,
   path,
-  theme = 'midnight',
+  theme = 'paper',
   ogImage = BRAND.ogImage,
 } = Astro.props;
 
@@ -32,7 +32,7 @@ const organization = {
   legalName: LEGAL.company,
   url: BRAND.url,
   email: LEGAL.email,
-  sameAs: [BRAND.instagram, SHOP_SITE],
+  sameAs: [SHOP_SITE],
   identifier: {
     '@type': 'PropertyValue',
     name: 'IČO',
@@ -63,7 +63,7 @@ const jsonLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content={theme === 'midnight' ? '#061a24' : '#f2f8fa'} />
+    <meta name="theme-color" content="#f2f8fa" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={BRAND.name} />
@@ -87,7 +87,7 @@ const jsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
     <slot name="head" />
   </head>
-  <body class:list={[theme === 'midnight' ? 'theme-midnight' : 'theme-paper']}>
+  <body>
     <a class="skip-link" href="#obsah">Přeskočit na obsah</a>
     <Header />
     <main id="obsah">

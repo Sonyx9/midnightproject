@@ -2,8 +2,6 @@
 
 export const BRAND = {
   name: 'Midnight Project',
-  instagram: 'https://www.instagram.com/midnightproject.cz/',
-  instagramHandle: '@midnightproject.cz',
   /** TODO: adresa, na které běží TAHLE jednostránka.
    *  Jede z toho canonical i og:url — pokud ji hostuješ jinde, přepiš. */
   url: 'https://midnightproject.cz',
