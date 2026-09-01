@@ -6,7 +6,7 @@ export const BRAND = {
    *  Jede z toho canonical i og:url — pokud ji hostuješ jinde, přepiš. */
   url: 'https://midnightproject.cz',
   description:
-    'Ebooky a výzvy pro lidi, co chtějí makat na sobě. Plány a trackery, žádné motivační kecy.',
+    'Výzvy pro lidi, co se chtějí postavit sami sobě. Plán na každý den, tracker a parta, co jede s tebou.',
   locale: 'cs_CZ',
   lang: 'cs',
   ogImage: '/og-default.jpg',

@@ -5,14 +5,12 @@ import SimpleShopForm from '../components/SimpleShopForm.astro';
 import { products, formatPrice, orderAnchor } from '../data/products';
 import { BRAND, CHECKOUT_NOTE } from '../consts';
 
-const title = 'Midnight Project — kup ebook, pojď do výzvy';
+const title = 'Midnight Project — postav se sám sobě';
 const description =
-  'Dva ebooky k výzvám: dopaminový detox a 75 Hard po česku. Plány a trackery, žádné motivační kecy. Kup na budujsamsebe.cz a jdi do výzvy s námi.';
+  'Dvě výzvy: sedmidenní dopaminový detox a 75 dní. Denní plán, tracker a parta, co jede s tebou. Kdo to dotáhne, jde na párty.';
 
-/** Tlačítko Koupit vede na objednávkový formulář níž na stránce. */
 const buyables = products.map((product) => ({
   ...product,
-  buyHref: `#${orderAnchor(product.slug)}`,
   priceLabel: product.priceCzk !== null ? formatPrice(product.priceCzk) : null,
 }));
 
@@ -43,8 +41,8 @@ const productsJsonLd =
     : null;
 
 const manifesto = [
-  'Žádné motivační kecy — plány a trackery',
-  'Ebook píšeme až z výzvy, kterou máme odjetou',
+  'Žádné motivační kecy — plán, tracker a tvoje hlava',
+  'Plán píšeme až z výzvy, kterou máme odjetou',
   'Garance vrácení peněz u všeho, co prodáme',
 ];
 ---
@@ -64,14 +62,14 @@ const manifesto = [
   <!-- Hero -->
   <section class="hero">
     <div class="shell">
-      <p class="label">// EBOOKY A VÝZVY</p>
-      <h1>Kup si ebook.<br />A pojď do výzvy s námi.</h1>
+      <p class="label">// VÝZVA</p>
+      <h1>Postav se sám sobě.</h1>
       <p class="hero__lead">
-        Dva plány, které si projdeš den po dni. Ebook koupíš na budujsamsebe.cz,
-        výzvu jedeš s námi — a za její splnění se jde na párty.
+        Sedm dní, nebo sedmdesát pět. Dostaneš plán na každý den, tracker
+        a partu, co jede stejnou výzvu s tebou. Zbytek je na tobě.
       </p>
       <p class="hero__cta">
-        <a class="btn" href="#produkty">Chci ebook →</a>
+        <a class="btn" href="#vyzvy">Vyber si výzvu →</a>
         <a class="btn btn--ghost" href="#odmena">Co za to</a>
       </p>
     </div>
@@ -80,12 +78,12 @@ const manifesto = [
   <hr class="rule" />
 
   <!-- Produkty -->
-  <section class="products shell" aria-labelledby="produkty">
+  <section class="products shell" aria-labelledby="vyzvy">
     <div class="section-head">
-      <p class="label">// CO PRODÁVÁME</p>
-      <h2 id="produkty">Zatím dva. Oba hotové.</h2>
+      <p class="label">// VYBER SI VÝZVU</p>
+      <h2 id="vyzvy">Dvě výzvy. Obě tě prověří.</h2>
       <p class="section-head__note">
-        Víc jich nemáme schválně. Výzvu si nejdřív odjedeme sami — ebook píšeme
+        Víc jich nemáme schválně. Výzvu si nejdřív odjedeme sami — plán píšeme
         až z toho, co je za námi.
       </p>
     </div>
@@ -93,26 +91,31 @@ const manifesto = [
     <ul class="cards">
       {
         buyables.map((product) => (
-          <li class="card">
-            {product.badge && <span class="card__badge">{product.badge}</span>}
-            <h3 class="card__title">{product.title}</h3>
-            <p class="card__tagline">{product.tagline}</p>
+          <li class="card" id={orderAnchor(product.slug)}>
+            <div class="card__info">
+              {product.badge && <span class="card__badge">{product.badge}</span>}
+              <h3 class="card__title">{product.title}</h3>
+              <p class="card__tagline">{product.tagline}</p>
 
-            <ul class="card__includes">
-              {product.includes.map((item) => (
-                <li class="check" data-checked="true">
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+              <p class="card__label">Co dostaneš</p>
+              <ul class="card__includes">
+                {product.includes.map((item) => (
+                  <li class="check" data-checked="true">
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
 
-            <div class="card__buy">
               {product.priceLabel && (
                 <p class="card__price">{product.priceLabel}</p>
               )}
-              <a class="btn" href={product.buyHref}>Koupit →</a>
               <p class="card__where">{CHECKOUT_NOTE}</p>
             </div>
+
+            <SimpleShopForm
+              formId={product.simpleShopFormId}
+              title={product.title}
+            />
           </li>
         ))
       }
@@ -123,42 +126,18 @@ const manifesto = [
     </p>
   </section>
 
-  <!-- Objednávka -->
-  <section class="orders band-paper" aria-labelledby="objednavka">
-    <div class="shell">
-    <div class="section-head">
-      <p class="label">// OBJEDNÁVKA</p>
-      <h2 id="objednavka">Vyplň a máš to</h2>
-      <p class="section-head__note">
-        Objednávka i platba běží přes SimpleShop. Ebook ti přijde na e-mail.
-      </p>
-    </div>
-
-    <div class="orders__list">
-      {
-        buyables.map((product) => (
-          <SimpleShopForm
-            formId={product.simpleShopFormId}
-            title={product.title}
-            anchor={orderAnchor(product.slug)}
-          />
-        ))
-      }
-    </div>
-    </div>
-  </section>
-
   <!-- Odměna -->
   <section class="reward" id="odmena" aria-labelledby="odmena-heading">
     <div class="shell">
       <p class="label">// ODMĚNA</p>
-      <h2 id="odmena-heading">Splň výzvu. A jdi na párty.</h2>
+      <h2 id="odmena-heading">Dotáhni to. A jdi na párty.</h2>
       <p class="reward__text">
-        Výzva není samoúčel. Kdo ji dotáhne do konce, jde slavit s ostatními,
-        co ji dali taky. Ebook je plán, párty je odměna na konci.
+        Poslední den výzvy není konec, ale důvod. Kdo to dotáhne, slaví
+        s ostatními, co si tím prošli taky — a ti se neptají, jestli to bylo
+        těžké. Vědí to.
       </p>
       <p class="reward__cta">
-        <a class="btn" href="#produkty">Jdu do toho →</a>
+        <a class="btn" href="#vyzvy">Jdu do toho →</a>
       </p>
     </div>
   </section>
@@ -168,8 +147,8 @@ const manifesto = [
     <TrackerOptin
       id="tracker"
       source="midnight-onepage"
-      heading="Ještě nekupuješ? Vezmi si tracker."
-      text="Nech email — pošleme ti 75 Hard tracker PDF zdarma a dáme vědět, až přidáme další výzvu."
+      heading="Ještě váháš? Zkus se nejdřív udržet týden."
+      text="Nech email a pošleme ti tracker zdarma. Odškrtávej si dny — uvidíš sám, jestli na výzvu máš."
     />
   </section>
 
@@ -232,19 +211,31 @@ const manifesto = [
 
   .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
-    gap: var(--rule-w);
+    gap: calc(var(--rule-w) * 2);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
+  /* Výzva a přihláška vedle sebe — platba je u karty, ne o sekci níž. */
   .card {
+    display: grid;
+    grid-template-columns: 1fr minmax(20rem, 27rem);
+    border: var(--rule-w) solid var(--rule);
+    scroll-margin-block-start: 1.5rem;
+  }
+
+  .card__info {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     padding: 2rem 1.75rem;
-    border: var(--rule-w) solid var(--rule);
+  }
+
+  @media (max-width: 56rem) {
+    .card {
+      grid-template-columns: 1fr;
+    }
   }
 
   .card__badge {
@@ -264,6 +255,14 @@ const manifesto = [
     font-size: 0.9375rem;
   }
 
+  .card__label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
   .card__includes {
     display: grid;
     gap: 0.75rem;
@@ -276,17 +275,9 @@ const manifesto = [
     font-size: 0.875rem;
   }
 
-  .card__buy {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1rem;
-    margin-block-start: auto;
-    padding-block-start: 1.5rem;
-    border-top: 2px solid color-mix(in srgb, var(--rule) 30%, transparent);
-  }
-
   .card__price {
+    margin-block-start: auto;
+    padding-block-start: 1.25rem;
     font-family: var(--font-mono);
     font-size: 1.5rem;
     font-weight: 600;
@@ -304,15 +295,6 @@ const manifesto = [
     font-family: var(--font-mono);
     font-size: 0.875rem;
     color: var(--muted);
-  }
-
-  .orders {
-    padding-block: clamp(3rem, 2rem + 4vw, 5rem);
-  }
-
-  .orders__list {
-    display: grid;
-    gap: var(--rule-w);
   }
 
   .reward {

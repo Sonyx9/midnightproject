@@ -2,17 +2,14 @@
 interface Props {
   /** ID formuláře ze SimpleShopu. */
   formId: string;
-  /** Nadpis nad formulářem. */
+  /** Název výzvy — jen pro čtečky, nadpis nese karta. */
   title: string;
-  /** ID kotvy, na kterou míří tlačítko Koupit. */
-  anchor: string;
 }
 
-const { formId, title, anchor } = Astro.props;
+const { formId, title } = Astro.props;
 ---
 
-<section class="order" id={anchor} aria-labelledby={`${anchor}-heading`}>
-  <h3 id={`${anchor}-heading`} class="order__title">{title}</h3>
+<div class="order band-paper" role="group" aria-label={`Přihláška do výzvy ${title}`}>
 
   <!--
     SimpleShop si formulář dosadí sám asynchronně. Slot má proto rezervovanou
@@ -42,7 +39,7 @@ const { formId, title, anchor } = Astro.props;
       </p>
     </noscript>
   </div>
-</section>
+</div>
 
 <script is:inline define:vars={{ formId }}>
   // Službu stačí natáhnout jednou, formulářů může být na stránce víc.
@@ -73,13 +70,7 @@ const { formId, title, anchor } = Astro.props;
 
 <style>
   .order {
-    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
-    border: var(--rule-w) solid var(--rule);
-    scroll-margin-block-start: 1.5rem;
-  }
-
-  .order__title {
-    margin-block-end: 1.5rem;
+    padding: clamp(1rem, 0.75rem + 1.5vw, 1.75rem);
   }
 
   /*
@@ -88,10 +79,7 @@ const { formId, title, anchor } = Astro.props;
     Zároveň má rezervovanou výšku, protože dorazí až asynchronně.
   */
   .order__slot {
-    min-block-size: 28rem;
-    padding: clamp(1rem, 0.75rem + 1vw, 1.75rem);
-    background: var(--paper);
-    color: var(--midnight-900);
+    min-block-size: 26rem;
   }
 
   .order__slot :global(a) {
