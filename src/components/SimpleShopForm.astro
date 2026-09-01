@@ -19,9 +19,20 @@ const { formId, title, anchor } = Astro.props;
     výšku, ať se stránka pod ním nepohne (CLS).
   -->
   <div class="order__slot">
+    <!--
+      Markup uvnitř musí zůstat přesně takhle. SimpleShop v createForm() sahá na
+      `[data-SimpleShopForm='…'] > div` — bez přímého potomka <div> spadne na
+      null a formulář se nevykreslí. Z prvního <a> si navíc počítá hash kampaně,
+      takže odkaz ani jeho text neměnit.
+    -->
     <div data-SimpleShopForm={formId}>
-      <!-- SimpleShop tenhle obsah přepíše, jakmile formulář vykreslí. -->
-      <p class="order__loading">Načítám objednávkový formulář…</p>
+      <div>
+        Prodejní formulář je vytvořen v systému <a
+          href="https://www.simpleshop.cz/?utm_source=simpleshop&utm_medium=form&utm_campaign=103788"
+          target="_blank"
+          rel="noopener">SimpleShop.cz</a
+        >.
+      </div>
     </div>
     <noscript>
       <p class="order__noscript">
@@ -91,12 +102,6 @@ const { formId, title, anchor } = Astro.props;
   .order__slot :global(select),
   .order__slot :global(textarea) {
     border-radius: 0;
-  }
-
-  .order__loading {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    color: color-mix(in srgb, var(--midnight-900) 60%, var(--paper));
   }
 
   .order__noscript {
