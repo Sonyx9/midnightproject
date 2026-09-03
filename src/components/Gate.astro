@@ -1,0 +1,214 @@
+---
+import { BRAND, GATE_HASH } from '../consts';
+---
+
+<div class="gate" id="gate">
+  <div class="gate__inner">
+    <p class="gate__brand">{BRAND.name}</p>
+    <p class="label">// PŘIPRAVUJEME</p>
+    <h1 class="gate__title">Stránku připravujeme.</h1>
+    <p class="gate__text">
+      Ještě na ní děláme. Máš-li přístup, přihlas se.
+    </p>
+
+    <form class="gate__form" id="gate-form" autocomplete="off">
+      <label class="gate__field">
+        <span>Jméno</span>
+        <input type="text" name="user" id="gate-user" autocomplete="username" required />
+      </label>
+      <label class="gate__field">
+        <span>Heslo</span>
+        <input
+          type="password"
+          name="pass"
+          id="gate-pass"
+          autocomplete="current-password"
+          required
+        />
+      </label>
+      <button class="btn" type="submit">Vstoupit →</button>
+      <p class="gate__error" id="gate-error" role="alert" hidden>
+        Nesedí to. Zkus to znovu.
+      </p>
+    </form>
+  </div>
+</div>
+
+<script is:inline define:vars={{ hash: GATE_HASH }}>
+  (function () {
+    var KEY = 'midnight.gate';
+    var root = document.documentElement;
+
+    /*
+      Pozor na pořadí: tenhle skript běží při parsování, tedy dřív, než níž
+      v dokumentu vznikne #site. Prvky proto hledáme až ve chvíli potřeby
+      a odkrytí řešíme i třídou na <html>, aby fungovalo okamžitě.
+    */
+    function unlock() {
+      root.classList.remove('is-locked');
+      root.classList.add('is-unlocked');
+
+      var gate = document.getElementById('gate');
+      if (gate) gate.remove();
+
+      var site = document.getElementById('site');
+      if (site) site.hidden = false;
+    }
+
+    // Kdo se už přihlásil, znovu to psát nemusí.
+    try {
+      if (localStorage.getItem(KEY) === hash) {
+        unlock();
+        // #site ještě neexistuje — atribut hidden sundáme, až doparsuje.
+        document.addEventListener('DOMContentLoaded', function () {
+          var site = document.getElementById('site');
+          if (site) site.hidden = false;
+        });
+        return;
+      }
+    } catch (err) {
+      /* localStorage může být zakázané — pak se prostě přihlásí znovu */
+    }
+
+    async function digest(text) {
+      var bytes = new TextEncoder().encode(text);
+      var buffer = await crypto.subtle.digest('SHA-256', bytes);
+      return Array.from(new Uint8Array(buffer))
+        .map(function (b) {
+          return b.toString(16).padStart(2, '0');
+        })
+        .join('');
+    }
+
+    document
+      .getElementById('gate-form')
+      .addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var error = document.getElementById('gate-error');
+        var user = document.getElementById('gate-user').value.trim();
+        var pass = document.getElementById('gate-pass').value;
+
+        try {
+          var given = await digest(user + ':' + pass);
+          if (given === hash) {
+            try {
+              localStorage.setItem(KEY, hash);
+            } catch (err) {
+              /* nevadí, jen se příště přihlásí znovu */
+            }
+            unlock();
+            return;
+          }
+        } catch (err) {
+          // crypto.subtle je dostupné jen v zabezpečeném kontextu (https/localhost)
+          error.textContent = 'Přihlášení tu nefunguje — otevři stránku přes https.';
+          error.hidden = false;
+          return;
+        }
+
+        error.hidden = false;
+        document.getElementById('gate-pass').value = '';
+      });
+  })();
+</script>
+
+<style is:global>
+  /* Dokud brána stojí, stránka pod ní nesmí problikávat. */
+  html.is-locked,
+  html.is-locked body {
+    block-size: 100%;
+    overflow: hidden;
+  }
+
+  /*
+    Odemčeno: obsah odkryjeme hned třídou, protože atribut hidden jde sundat
+    až po doparsování. Bez toho by web po přihlášení zůstal prázdný.
+  */
+  html.is-unlocked #gate {
+    display: none;
+  }
+
+  html.is-unlocked #site[hidden] {
+    display: block;
+  }
+</style>
+
+<style>
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background-color: var(--bg);
+    background-image: radial-gradient(
+      60rem 34rem at 50% 0%,
+      color-mix(in srgb, var(--midnight-700) 85%, transparent),
+      transparent 70%
+    );
+    overflow-y: auto;
+  }
+
+  .gate__inner {
+    inline-size: min(28rem, 100%);
+  }
+
+  .gate__brand {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-block-end: 2.5rem;
+  }
+
+  .gate__title {
+    font-size: clamp(1.75rem, 1.4rem + 2vw, 2.75rem);
+    margin-block: 1rem 1rem;
+  }
+
+  .gate__text {
+    color: var(--muted);
+  }
+
+  .gate__form {
+    display: grid;
+    gap: 1rem;
+    margin-block-start: 2.5rem;
+    padding-block-start: 2rem;
+    border-top: var(--rule-w) solid var(--rule);
+  }
+
+  .gate__field {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .gate__field span {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .gate__field input {
+    padding: 0.85rem 1rem;
+    background: var(--field-bg);
+    color: var(--fg);
+    border: var(--rule-w) solid var(--rule);
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+  }
+
+  .gate__form .btn {
+    justify-self: start;
+    margin-block-start: 0.5rem;
+  }
+
+  .gate__error {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--orange);
+  }
+</style>

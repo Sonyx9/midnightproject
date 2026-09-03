@@ -33,6 +33,20 @@ export const LINKS = {
   terms: shopLink('/obchodni-podminky'),
 } as const;
 
+/**
+ * Web je zatím za bránou — návštěvník uvidí „Připravujeme“ a musí se přihlásit.
+ * Přepnutím na `false` brána zmizí a stránka se zároveň začne indexovat.
+ *
+ * POZOR: je to závěs, ne zámek. Stránka je statická, takže se její obsah
+ * stáhne do prohlížeče vždy — kdo umí otevřít zdroj, přečte si ho i bez hesla.
+ * Na skutečné utajení je potřeba ochrana na straně serveru (viz README).
+ */
+export const SITE_LOCKED = true;
+
+/** SHA-256 z „jméno:heslo“. Samotné heslo tak ve zdroji nikde není. */
+export const GATE_HASH =
+  '212bee9070e88e1eb3e38a2cbf1dd2fc2c04172219689f591a10e158bf98f54d';
+
 /** Popisek pod tlačítkem Koupit — nákup jede přes platební bránu. */
 export const CHECKOUT_NOTE = 'Objednávka přes SimpleShop';
 

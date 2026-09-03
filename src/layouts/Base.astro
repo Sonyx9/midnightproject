@@ -2,7 +2,8 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { BRAND, LEGAL, SHOP_SITE } from '../consts';
+import Gate from '../components/Gate.astro';
+import { BRAND, LEGAL, SHOP_SITE, SITE_LOCKED } from '../consts';
 
 interface Props {
   title: string;
@@ -53,12 +54,14 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang={BRAND.lang}>
+<html lang={BRAND.lang} class:list={[SITE_LOCKED && 'is-locked']}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {/* Zamčenou stránku nemá smysl indexovat — s odemčením zmizí i tohle. */}
+    {SITE_LOCKED && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#061a24" />
 
@@ -85,11 +88,14 @@ const jsonLd = {
     <slot name="head" />
   </head>
   <body>
-    <a class="skip-link" href="#obsah">Přeskočit na obsah</a>
-    <Header />
-    <main id="obsah">
-      <slot />
-    </main>
-    <Footer />
+    {SITE_LOCKED && <Gate />}
+    <div id="site" hidden={SITE_LOCKED}>
+      <a class="skip-link" href="#obsah">Přeskočit na obsah</a>
+      <Header />
+      <main id="obsah">
+        <slot />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>
